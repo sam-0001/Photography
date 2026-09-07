@@ -30,7 +30,7 @@ export default async function proxy(req: NextRequest) {
   }
   
   // Protect API write operations
-  if (path.startsWith('/api/') && !path.startsWith('/api/admin/login') && !path.startsWith('/api/gallery') && !path.startsWith('/api/enquiries')) {
+  if (path.startsWith('/api/') && !path.startsWith('/api/admin/login') && !path.startsWith('/api/admin/setup') && !path.startsWith('/api/gallery') && !path.startsWith('/api/enquiries')) {
     // Note: If you want to allow GET requests (like fetching portfolio), we should only block non-GET
     if (req.method !== 'GET') {
       const token = req.cookies.get('admin_token')?.value;
