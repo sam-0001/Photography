@@ -1,26 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* === ATELIER EDITORIAL COLOR SYSTEM === */
+  --color-background: #FAF8F5;
+  --color-surface: #fef9f2;
+  --color-surface-dim: #ded9d3;
+  --color-surface-bright: #fef9f2;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f8f3ec;
+  --color-surface-container: #f2ede7;
+  --color-surface-container-high: #ece7e1;
+  --color-surface-container-highest: #e7e2db;
+  --color-on-surface: #1d1b18;
+  --color-on-surface-variant: #4a4640;
+  --color-outline: #7b766f;
+  --color-outline-variant: #ccc5bd;
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1c1b1a;
+  --color-secondary: #775927;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #ffd799;
+  --color-secondary-fixed: #ffdeac;
+  --color-secondary-fixed-dim: #e7c184;
+  --color-on-secondary-fixed: #281900;
+  --color-inverse-surface: #32302c;
+  --color-inverse-on-surface: #f5f0ea;
+  --color-error: #ba1a1a;
+
+  /* === FONTS === */
+  --font-bodoni: 'Bodoni Moda', Georgia, serif;
+  --font-jakarta: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* === SPACING === */
+  --spacing-margin-mobile: 1.25rem;
+  --spacing-margin-desktop: 4rem;
+  --spacing-max-editorial: 1440px;
+  --spacing-max-text: 680px;
+  --spacing-space-xs: 0.5rem;
+  --spacing-space-sm: 0.75rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-space-2xl: 4rem;
+  --spacing-space-3xl: 6rem;
+  --spacing-space-4xl: 9rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+* { box-sizing: border-box; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-jakarta);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
+::-webkit-scrollbar-thumb { background: var(--color-surface-dim); }
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Scroll offset for fixed nav */
+section[id] { scroll-margin-top: 80px; }
+
+/* Hairline borders */
+.border-hairline { border-color: rgba(26,25,24,0.12); }
+.border-hairline-subtle { border-color: rgba(26,25,24,0.06); }
