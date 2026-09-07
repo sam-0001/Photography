@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'super_secret_fallback_key_that_should_be_changed');
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret.length === 0) {
+    // Generate a random secret if missing in production to prevent hardcoded vulnerabilities.
+    // Note: This will cause tokens to invalidate every time the server restarts/cold-starts.
+    return new TextEncoder().encode(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+  }
+  return new TextEncoder().encode(secret);
+};
+const JWT_SECRET = getJwtSecret();
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
