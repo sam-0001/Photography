@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import ComposedImage from './ComposedImage';
 import type { ImageComposition } from '@/lib/imageComposition';
 
@@ -113,10 +114,11 @@ export default function PortfolioGrid({ initialMedia = [], showFilter = true }: 
               <article
                 key={key}
                 data-category={item.category}
-                className={`portfolio-card group cursor-pointer flex flex-col justify-between border border-[var(--color-outline-variant,#ccc5bd)] bg-[var(--color-surface,#fef9f2)] overflow-hidden transition-all duration-300 hover:shadow-lg ${
+                className={`portfolio-card animate-fade-in-up group cursor-pointer flex flex-col justify-between border border-[var(--color-outline-variant,#ccc5bd)] bg-[var(--color-surface,#fef9f2)] overflow-hidden transition-all duration-300 hover:shadow-lg ${
                   isWide ? 'md:col-span-2' : ''
                 }`}
                 onClick={() => setActiveItem(item)}
+                style={{ animationDelay: `${idx * 0.1}s` }}
               >
                 <div className="relative w-full overflow-hidden bg-gray-100" style={{ aspectRatio: '4/3' }}>
                   <ComposedImage
@@ -223,12 +225,16 @@ export default function PortfolioGrid({ initialMedia = [], showFilter = true }: 
 
             <div className="flex-1 flex items-start justify-center bg-black/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={activeItem.url}
-                alt={activeItem.title}
-                className="w-full h-auto"
-                style={{ display: 'block' }}
-              />
+              <div className="relative w-full h-[80vh]">
+                <Image
+                  src={activeItem.url}
+                  alt={activeItem.title}
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  sizes="100vw"
+                  unoptimized={activeItem.url.startsWith('data:')}
+                />
+              </div>
             </div>
 
             <div className="w-full md:w-72 flex flex-col justify-between">

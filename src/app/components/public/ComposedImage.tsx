@@ -1,24 +1,7 @@
 'use client';
 
-/**
- * ComposedImage — Universal Image Rendering Component
- * Brother's Photography
- *
- * Every image on the public site should use this component.
- * It reads the ImageComposition (focalX, focalY, zoom) stored by the admin
- * and renders the image correctly: no head-cropping, intentional framing.
- *
- * Usage:
- *   <ComposedImage
- *     src={item.url}
- *     alt={item.title}
- *     composition={item.composition}
- *     aspectRatio="4/3"
- *     className="group-hover:scale-105"
- *   />
- */
-
 import React, { CSSProperties } from 'react';
+import Image from 'next/image';
 import {
   ImageComposition,
   resolveComposition,
@@ -41,48 +24,18 @@ export type AspectRatioPreset =
   | '16/10';
 
 interface ComposedImageProps {
-  /** Image URL */
   src: string;
-  /** Alt text for accessibility */
   alt: string;
-  /** Admin-controlled composition: focalX, focalY, zoom */
   composition?: Partial<ImageComposition> | null;
-  /**
-   * Aspect ratio for the container frame.
-   * If omitted the image fills its parent (parent must have defined height).
-   */
   aspectRatio?: AspectRatioPreset | string;
-  /**
-   * Extra CSS classes applied to the <img> element.
-   * Use Tailwind transition/hover classes here, e.g. "group-hover:scale-105"
-   */
   className?: string;
-  /** Extra inline styles on the outer container div */
   containerStyle?: CSSProperties;
-  /** Optional overlay rendered on top of the image */
   overlay?: React.ReactNode;
-  /** Whether to lazy-load (default true) */
   lazy?: boolean;
-  /** Optional click handler */
   onClick?: () => void;
+  priority?: boolean;
 }
 
-/**
- * ComposedImage renders a fixed-frame image with admin-controlled
- * focal point and zoom — no automatic center-crop.
- *
- * Architecture:
- *  ┌── wrapper div (aspect ratio + overflow hidden) ─────────────────┐
- *  │  ┌── inner div (100%×100%, scale transform at focal origin) ──┐  │
- *  │  │  <img object-cover, object-position at focal point>        │  │
- *  │  └────────────────────────────────────────────────────────────┘  │
- *  │  [optional overlay]                                              │
- *  └──────────────────────────────────────────────────────────────────┘
- *
- * Two-layer approach:
- *  - object-position handles focal anchor within the natural image
- *  - CSS scale transform on the inner div handles zoom, anchored at focal
- */
 export default function ComposedImage({
   src,
   alt,
@@ -93,6 +46,7 @@ export default function ComposedImage({
   overlay,
   lazy = true,
   onClick,
+  priority = false,
 }: ComposedImageProps) {
   const c = resolveComposition(composition);
   const objectPosition = compositionToObjectPosition(c);
@@ -111,29 +65,23 @@ export default function ComposedImage({
     inset: 0,
     transform,
     transformOrigin,
-    // transition for smooth zoom animation when composition changes live (admin preview)
     transition: 'transform 0.4s ease',
-  };
-
-  const imgStyle: CSSProperties = {
-    display: 'block',
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    objectPosition,
   };
 
   return (
     <div style={wrapperStyle} onClick={onClick}>
       <div style={innerStyle}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={src}
           alt={alt}
-          style={imgStyle}
-          loading={lazy ? 'lazy' : 'eager'}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={priority}
+          loading={priority ? undefined : (lazy ? 'lazy' : 'eager')}
+          style={{ objectFit: 'cover', objectPosition }}
           className={className}
           draggable={false}
+          unoptimized={src.startsWith('data:')}
         />
       </div>
       {overlay && (
