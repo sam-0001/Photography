@@ -241,17 +241,11 @@ export default async function HomePage() {
               <Link
                 href="/contact"
                 style={{
-                  border: '1px solid rgba(255,255,255,0.6)',
-                  color: '#ffffff',
                   fontFamily: 'var(--font-jakarta)',
                   fontSize: '0.6875rem',
-                  fontWeight: 600,
                   letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  padding: '1rem 2rem',
-                  textDecoration: 'none',
                 }}
-                className="hover:bg-white hover:text-black transition-colors"
+                className="inline-block px-8 py-4 border border-white/60 text-white font-semibold uppercase hover:bg-white hover:text-black transition-colors"
               >
                 Book Your Event →
               </Link>
