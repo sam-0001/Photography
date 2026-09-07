@@ -18,12 +18,12 @@ export async function POST(req: NextRequest) {
 
     const admin = await Admin.findOne({ username });
     if (!admin) {
-      return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Wrong username or password. Please contact the owner.' }, { status: 401 });
     }
 
     const isValid = await admin.comparePassword(password);
     if (!isValid) {
-      return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Wrong username or password. Please contact the owner.' }, { status: 401 });
     }
 
     // Generate JWT (expires in 36 hours as requested)
