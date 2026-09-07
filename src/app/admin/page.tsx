@@ -62,12 +62,17 @@ interface EventDoc {
 interface MediaDoc {
   _id: string;
   title?: string;
+  subtitle?: string;
   url?: string;
   thumbnailUrl?: string;
   category?: string;
   mediaType?: string;
   isPublished?: boolean;
   isFeatured?: boolean;
+  exif?: {
+    camera?: string;
+    lens?: string;
+  };
 }
 
 export default function AdminPage() {
@@ -206,7 +211,8 @@ export default function AdminPage() {
       body: JSON.stringify({
         title: editingMedia.title,
         subtitle: editingMedia.subtitle,
-        category: editingMedia.category
+        category: editingMedia.category,
+        exif: editingMedia.exif
       }),
       headers: { 'Content-Type': 'application/json' },
     });
@@ -862,6 +868,14 @@ export default function AdminPage() {
                               <option key={c}>{c}</option>
                             ))}
                           </select>
+                        </div>
+                        <div>
+                          <label style={{ ...S.label, color: S.primary, display: 'block', marginBottom: '0.375rem' }}>Camera (EXIF)</label>
+                          <input style={inputCls} placeholder="e.g. Leica M11" value={editingMedia.exif?.camera || ''} onChange={e => setEditingMedia({ ...editingMedia, exif: { ...editingMedia.exif, camera: e.target.value } })} />
+                        </div>
+                        <div>
+                          <label style={{ ...S.label, color: S.primary, display: 'block', marginBottom: '0.375rem' }}>Lens (EXIF)</label>
+                          <input style={inputCls} placeholder="e.g. 35mm f/1.4" value={editingMedia.exif?.lens || ''} onChange={e => setEditingMedia({ ...editingMedia, exif: { ...editingMedia.exif, lens: e.target.value } })} />
                         </div>
                       </div>
                       <div style={{ display: 'flex', gap: '1rem' }}>
