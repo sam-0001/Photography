@@ -25,9 +25,9 @@ export async function GET(
 
     const galleryUrl = `${origin}/gallery/${event.urlToken}`;
 
-    // Generate as PNG buffer
     const { searchParams } = new URL(req.url);
     const format = searchParams.get('format') || 'png';
+    const isPreview = searchParams.get('preview') === '1';
 
     if (format === 'svg') {
       const svgString = await QRCode.toString(galleryUrl, {
@@ -40,19 +40,19 @@ export async function GET(
         },
       });
 
-      // Cache the dataUrl in DB for future retrieval
       await ClientEvent.findByIdAndUpdate(event._id, {
         qrCodeDataUrl: `data:image/svg+xml;base64,${Buffer.from(svgString).toString('base64')}`,
       });
 
-      return new NextResponse(svgString, {
-        status: 200,
-        headers: {
-          'Content-Type': 'image/svg+xml',
-          'Content-Disposition': `attachment; filename="gallery-qr-${event.urlToken}.svg"`,
-          'Cache-Control': 'public, max-age=3600',
-        },
-      });
+      const headers: Record<string, string> = {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=3600',
+      };
+      if (!isPreview) {
+        headers['Content-Disposition'] = `attachment; filename="gallery-qr-${event.urlToken}.svg"`;
+      }
+
+      return new NextResponse(svgString, { status: 200, headers });
     }
 
     // Default: PNG
@@ -66,18 +66,18 @@ export async function GET(
       },
     });
 
-    // Cache as data URL
     const dataUrl = `data:image/png;base64,${pngBuffer.toString('base64')}`;
     await ClientEvent.findByIdAndUpdate(event._id, { qrCodeDataUrl: dataUrl });
 
-    return new NextResponse(new Uint8Array(pngBuffer), {
-      status: 200,
-      headers: {
-        'Content-Type': 'image/png',
-        'Content-Disposition': `attachment; filename="gallery-qr-${event.urlToken}.png"`,
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
+    const headers: Record<string, string> = {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=3600',
+    };
+    if (!isPreview) {
+      headers['Content-Disposition'] = `attachment; filename="gallery-qr-${event.urlToken}.png"`;
+    }
+
+    return new NextResponse(new Uint8Array(pngBuffer), { status: 200, headers });
   } catch (err: unknown) {
     console.error('[GET /api/events/[id]/qr]', err);
     const message = err instanceof Error ? err.message : 'Internal server error.';

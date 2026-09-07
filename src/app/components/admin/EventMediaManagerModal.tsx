@@ -327,13 +327,11 @@ export default function EventMediaManagerModal({ event, isOpen, onClose, onMedia
               {/* QR Code */}
               <div style={{ minWidth: '180px' }}>
                 <p style={{ ...S.label, fontSize: '0.625rem', color: S.onSurfaceVariant, marginBottom: '0.375rem' }}>QR Code</p>
-                {qrPreview ? (
-                  <img src={qrPreview} alt="QR Code" style={{ width: '120px', height: '120px', border: `1px solid ${S.outlineVariant}`, display: 'block', marginBottom: '0.5rem' }} />
-                ) : (
-                  <div style={{ width: '120px', height: '120px', border: `2px dashed ${S.outlineVariant}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.75rem', color: S.onSurfaceVariant, textAlign: 'center' }}>QR<br />Preview</span>
-                  </div>
-                )}
+                <img 
+                  src={`/api/events/${event._id}/qr?preview=1`} 
+                  alt="QR Code" 
+                  style={{ width: '120px', height: '120px', border: `1px solid ${S.outlineVariant}`, display: 'block', marginBottom: '0.5rem' }} 
+                />
                 <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => downloadQR('png')}
@@ -349,6 +347,13 @@ export default function EventMediaManagerModal({ event, isOpen, onClose, onMedia
                   >
                     {qrLoading ? '…' : '↓ SVG'}
                   </button>
+                  <a
+                    href={`/api/events/${event._id}/qr-card`}
+                    download
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.375rem 0.75rem', border: 'none', backgroundColor: '#775927', color: '#fff', textDecoration: 'none', display: 'inline-block', marginTop: '4px' }}
+                  >
+                    ✨ Download Aesthetic Card
+                  </a>
                 </div>
               </div>
             </div>
