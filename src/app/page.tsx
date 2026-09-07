@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import InquireForm from './components/InquireForm';
 import ComposedImage from './components/public/ComposedImage';
-import StoriesCarousel from './components/public/StoriesCarousel';
+import PortfolioGrid from './components/public/PortfolioGrid';
 import connectDB from '@/lib/mongodb';
 import { PortfolioMedia } from '@/lib/models';
 
@@ -115,44 +115,20 @@ const TESTIMONIALS = [
 ];
 
 export default async function HomePage() {
-  let allStories: { storyId: string; stories: any[] }[] = [];
+  let mediaItems: any[] = [];
   let films = DEFAULT_FILMS;
 
   try {
     await connectDB();
 
-    // Query dynamic PortfolioStories from MongoDB
-    const PortfolioStory = (await import('@/lib/models/PortfolioStory')).default;
-    const dbStories = await PortfolioStory.find({ isPublished: true, isFeatured: true })
-      .sort({ sortOrder: 1, createdAt: -1 })
-      .limit(3)
+    // Query dynamic PortfolioMedia for the homepage grid
+    const dbItems = await PortfolioMedia.find({ isPublished: true, mediaType: 'image' })
+      .sort({ isFeatured: -1, sortOrder: 1, createdAt: -1 })
+      .limit(6)
       .lean();
 
-    if (dbStories && dbStories.length > 0) {
-      allStories = dbStories.map((story: any) => ({
-        storyId: story._id?.toString(),
-        stories: [
-          {
-            id: story._id?.toString() + '-s1', client: story.title, type: story.category, location: story.subtitle,
-            date: story.eventDate, img: story.slot1?.url, composition: story.slot1?.composition, featured: story.isFeatured,
-          },
-          {
-            id: story._id?.toString() + '-s2', client: story.title, type: story.category, location: story.subtitle,
-            date: story.eventDate, img: story.slot2?.url, composition: story.slot2?.composition, featured: false,
-          },
-          {
-            id: story._id?.toString() + '-s3', client: story.title, type: story.category, location: story.subtitle,
-            date: story.eventDate, img: story.slot3?.url, composition: story.slot3?.composition, featured: false,
-          },
-          {
-            id: story._id?.toString() + '-s4', client: story.title, type: story.category, location: story.subtitle,
-            date: story.eventDate, img: story.slot4?.url, composition: story.slot4?.composition, featured: false,
-          }
-        ]
-      }));
-    } else {
-      // Fallback to fixture
-      allStories = [{ storyId: 'fixture-1', stories: DEFAULT_FEATURED_STORIES }];
+    if (dbItems && dbItems.length > 0) {
+      mediaItems = JSON.parse(JSON.stringify(dbItems));
     }
 
     // Query dynamic films from MongoDB
@@ -370,8 +346,8 @@ export default async function HomePage() {
       </section>
 
       {/* Full-bleed Carousel */}
-      <section className="w-full relative">
-        <StoriesCarousel allStories={allStories} />
+      <section className="px-5 md:px-16" style={{ maxWidth: 'var(--spacing-max-editorial, 1440px)', margin: '0 auto' }}>
+        <PortfolioGrid initialMedia={mediaItems.length > 0 ? mediaItems : undefined} showFilter={false} />
       </section>
 
       <section className="pb-24 px-5 md:px-16" style={{ maxWidth: 'var(--spacing-max-editorial, 1440px)', margin: '0 auto' }}>
